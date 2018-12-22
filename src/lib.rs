@@ -1,56 +1,87 @@
 extern crate phf;
 extern crate regex;
 
-use std::fmt;
+use std::borrow::Cow;
+use data_generated::EMOJI;
 use regex::{
     Regex,
     Captures,
 };
 
-include!(concat!(env!("OUT_DIR"), "/emojis.rs"));
+mod data_generated;
 
-/// Macro for compile-time emoji lookup
+/// Find Unicode representation for given emoji name
 ///
-/// This macro will expand to the string stored in `EMOJIS` on compile-time.
-/// This doesn't introduce any overhead, but is useful to prevent pasting of
-/// unicode into the code.
+/// The name should be without `:`, e.g. `smile`.
 ///
-/// # Example
-///
-/// ```rust
-/// #[macro_use] extern crate emojicons;
-/// 
-/// # fn main() {
-/// assert_eq!(emoji!("cat").to_string(), "\u{01F431}");
-/// # }
-/// ```
-#[macro_export]
-macro_rules! emoji {
-    ($e: expr) => (
-        $crate::EMOJIS.get(&format!(":{}:", $e)[..]).unwrap_or(&$e);
-    )
+/// Case sensitive. Returns `None` if the name is not recognized.
+pub fn get(name: &str) -> Option<&str> {
+    EMOJI.get(name).map(|s| *s)
 }
 
-/// Newtype used for substituting emoji codes for emoji
+/// List all known emoji
 ///
-/// Leaves the notation intact if a corresponding emoji is not found in the
-/// lookup table.
-pub struct EmojiFormatter<'a>(pub &'a str);
+/// Returns iterator of `(name, unicode)`
+pub fn all() -> impl Iterator<Item=(&'static str, &'static str)> {
+    EMOJI.entries.iter().map(|&x| x)
+}
 
-impl<'a> std::fmt::Display for EmojiFormatter<'a> {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        let re = Regex::new(r":([a-zA-Z0-9_+-]+):").unwrap();
-        
-        let result = re.replace_all(self.0, |capts: &Captures| {
-            let sym = capts.at(0).unwrap();
+/// Replaces `:emoji:` in strings
+///
+/// ```rust
+/// let r = gh_emoji::Replacer::new();
+/// let unicode_text = r.replace_all("Hello :cat:!");
+/// ```
+pub struct Replacer {
+    regex: Regex
+}
 
-            match EMOJIS.get(sym) {
-                Some(e) => format!("{}", e),
-                None    => sym.to_string()
+impl Replacer {
+    /// There is some small setup cost
+    pub fn new() -> Self {
+        Self {
+            regex: Regex::new(r":([a-z1238+-][a-z0-9_-]*):").unwrap(),
+        }
+    }
+
+    /// Replaces all occurrences of `:emoji_names:` in the string
+    ///
+    /// It may return `Cow::Borrowed` if there were no emoji-like
+    /// patterns in the string. Call `.to_string()` if you need
+    /// `String` or `.as_ref()` to get `&str`.
+    pub fn replace_all<'a>(&self, text: &'a str) -> Cow<'a, str> {
+        self.regex.replace_all(text, |capts: &Captures| {
+            let sym = &capts[1];
+
+            match EMOJI.get(sym) {
+                Some(e) => *e,
+                None    => &capts[0],
             }
-        });
-
-        write!(f, "{}", result)
+        })
     }
 }
 
+#[test]
+fn replacer() {
+    let r = Replacer::new();
+    assert_eq!("hello 😄 :not_emoji_404:", r.replace_all("hello :smile: :not_emoji_404:"));
+    assert_eq!(Replacer::new().replace_all(":cat: make me :smile:"), "\u{01F431} make me \u{01F604}");
+}
+
+#[test]
+fn get_existing() {
+    assert_eq!(get("smile"), Some("\u{01F604}"));
+    assert_eq!(get("poop"),  Some("\u{01F4A9}"));
+    assert_eq!(get("cat"),   Some("\u{01F431}"));
+    assert_eq!(get("+1"),    Some("👍"));
+    assert_eq!(get("-1"),    Some("\u{01F44E}"));
+    assert_eq!(get("8ball"), Some("\u{01F3B1}"));
+}
+
+#[test]
+fn get_nonexistent() {
+    assert_eq!(get("stuff"), None);
+    assert_eq!(get("++"), None);
+    assert_eq!(get("--"), None);
+    assert_eq!(get("666"), None);
+}

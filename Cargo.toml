@@ -1,21 +1,16 @@
 [package]
 
-name = "emojicons"
+name = "gh-emoji"
 version = "1.0.0"
-authors = ["Jiří Šebele <sindriava@gmail.com>"]
+authors = ["Kornel <kornel@geekhood.net>", "Jiří Šebele <sindriava@gmail.com>"]
 
-description = "Parse :emoji: notation to unicode representation."
-repository = "https://github.com/jiri/rust-emojicons"
+description = "Convert :emoji: to Unicode using GitHub's emoji names"
+repository = "https://github.com/kornelski/gh-emoji"
+homepage = "https://github.com/kornelski/gh-emoji"
 readme = "README.md"
 license = "MIT"
-
-build = "build.rs"
-
-[build-dependencies]
-
-phf_codegen = "0.7.10"
+include = ["/src/*.rs", "/LICENSE", "/README.md", "/Cargo.toml"]
 
 [dependencies]
-
-phf = "0.7.10"
-regex = "0.1.58"
+phf = "0.7.23"
+regex = "1.1.0"
