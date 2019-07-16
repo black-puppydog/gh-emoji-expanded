@@ -1,8 +1,6 @@
-extern crate phf;
-extern crate regex;
 
+use crate::data_generated::EMOJI;
 use std::borrow::Cow;
-use data_generated::EMOJI;
 use regex::{
     Regex,
     Captures,
@@ -50,14 +48,14 @@ impl Replacer {
     /// patterns in the string. Call `.to_string()` if you need
     /// `String` or `.as_ref()` to get `&str`.
     pub fn replace_all<'a>(&self, text: &'a str) -> Cow<'a, str> {
-        self.regex.replace_all(text, |capts: &Captures| {
-            let sym = &capts[1];
+        self.regex.replace_all(text, EmojiRegexReplacer)
+    }
+}
 
-            match EMOJI.get(sym) {
-                Some(e) => *e,
-                None    => &capts[0],
-            }
-        })
+struct EmojiRegexReplacer;
+impl regex::Replacer for EmojiRegexReplacer {
+    fn replace_append(&mut self, capts: &Captures<'_>, dst: &mut String) {
+        dst.push_str(EMOJI.get(&capts[1]).copied().unwrap_or_else(|| &capts[0]));
     }
 }
 
