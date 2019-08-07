@@ -1,1 +1,4 @@
 language: rust
+script:
+  - "( cd generate; cargo run )"
+  - cargo test --verbose --all
