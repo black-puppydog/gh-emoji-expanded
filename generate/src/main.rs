@@ -26,15 +26,15 @@ fn main() {
     let source = fs::read(parent.join("gemoji/db/emoji.json")).expect("Can't load ../gemoji/db/emoji.json. Try git submodule update --init");
     let emoji: Vec<Emoji> = serde_json::from_slice(&source).unwrap();
 
-    for e in emoji {
-        if let Some(unicode_emoji) = e.emoji {
+    for e in &emoji {
+        if let Some(unicode_emoji) = &e.emoji {
             let code = format!("\"{}\"", unicode_emoji);
-            for name in e.aliases {
-                m.entry(name, &code);
+            for name in &e.aliases {
+                m.entry(name.as_str(), &code);
             }
         }
     }
 
-    m.build(&mut file).unwrap();
-    write!(&mut file, ";\n").unwrap();
+    let m = m.build();
+    write!(&mut file, "{};\n", m).unwrap();
 }

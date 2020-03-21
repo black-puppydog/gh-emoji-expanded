@@ -1,12 +1,12 @@
 [package]
 name = "gh-emoji-generate"
-version = "0.1.0"
+version = "0.1.1"
 authors = ["Kornel <kornel@geekhood.net>", "Jiří Šebele <sindriava@gmail.com>"]
 edition = "2018"
 publish = false
 
 [dependencies]
-phf_codegen = "0.7.23"
-serde = "1.0.82"
-serde_json = "1.0.33"
-serde_derive = "1.0.82"
+phf_codegen = "0.8.0"
+serde = "1.0.105"
+serde_json = "1.0.48"
+serde_derive = "1.0.105"
