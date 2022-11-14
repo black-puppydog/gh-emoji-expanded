@@ -23,7 +23,7 @@ pub fn all() -> impl Iterator<Item = (&'static str, &'static str)> {
 /// Replaces `:emoji:` in strings
 ///
 /// ```rust
-/// let r = gh_emoji::Replacer::new();
+/// let r = gh_emoji_expanded::Replacer::new();
 /// let unicode_text = r.replace_all("Hello :cat:!");
 /// ```
 pub struct Replacer {
