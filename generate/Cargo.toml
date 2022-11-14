@@ -1,8 +1,8 @@
 [package]
-name = "gh-emoji-generate"
-version = "0.1.2"
-authors = ["Kornel <kornel@geekhood.net>", "Jiří Šebele <sindriava@gmail.com>"]
-edition = "2018"
+name = "gh-emoji-expanded-generate"
+version = "0.1.3"
+authors = ["Daan Wynen <emoji-db-expanded@muchmuch.coffee>", "Kornel <kornel@geekhood.net>", "Jiří Šebele <sindriava@gmail.com>"]
+edition = "2021"
 publish = false
 
 [dependencies]

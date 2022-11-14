@@ -1,17 +1,16 @@
 [package]
-name = "gh-emoji"
-version = "1.0.6"
-authors = ["Kornel <kornel@geekhood.net>", "Jiří Šebele <sindriava@gmail.com>"]
+name = "gh-emoji-expanded"
+version = "1.0.7"
+authors = ["Daan Wynen <emoji-db-expanded@muchmuch.coffee>", "Kornel <kornel@geekhood.net>", "Jiří Šebele <sindriava@gmail.com>"]
 
 description = "Convert `:emoji:` to Unicode using GitHub's emoji names"
-repository = "https://github.com/kornelski/gh-emoji"
-homepage = "https://lib.rs/crates/gh-emoji"
+repository = "https://github.com/black-puppydog/gh-emoji-expanded"
 readme = "README.md"
 license = "MIT"
 include = ["/src/*.rs", "/LICENSE", "/README.md", "/Cargo.toml"]
 categories = ["text-processing"]
 keywords = ["emoji", "github", "markdown", "unicode", "convert"]
-edition = "2018"
+edition = "2021"
 
 [dependencies]
 phf = "0.11.0"
