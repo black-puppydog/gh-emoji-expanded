@@ -1,10 +1,6 @@
-
 use crate::data_generated::EMOJI;
+use regex::{Captures, Regex};
 use std::borrow::Cow;
-use regex::{
-    Regex,
-    Captures,
-};
 
 mod data_generated;
 
@@ -20,7 +16,7 @@ pub fn get(name: &str) -> Option<&str> {
 /// List all known emoji
 ///
 /// Returns iterator of `(name, unicode)`
-pub fn all() -> impl Iterator<Item=(&'static str, &'static str)> {
+pub fn all() -> impl Iterator<Item = (&'static str, &'static str)> {
     EMOJI.entries.iter().map(|&x| x)
 }
 
@@ -31,7 +27,7 @@ pub fn all() -> impl Iterator<Item=(&'static str, &'static str)> {
 /// let unicode_text = r.replace_all("Hello :cat:!");
 /// ```
 pub struct Replacer {
-    regex: Regex
+    regex: Regex,
 }
 
 impl Replacer {
@@ -62,17 +58,23 @@ impl regex::Replacer for EmojiRegexReplacer {
 #[test]
 fn replacer() {
     let r = Replacer::new();
-    assert_eq!("hello 😄 :not_emoji_404:", r.replace_all("hello :smile: :not_emoji_404:"));
-    assert_eq!(Replacer::new().replace_all(":cat: make me :smile:"), "\u{01F431} make me \u{01F604}");
+    assert_eq!(
+        "hello 😄 :not_emoji_404:",
+        r.replace_all("hello :smile: :not_emoji_404:")
+    );
+    assert_eq!(
+        Replacer::new().replace_all(":cat: make me :smile:"),
+        "\u{01F431} make me \u{01F604}"
+    );
 }
 
 #[test]
 fn get_existing() {
     assert_eq!(get("smile"), Some("\u{01F604}"));
-    assert_eq!(get("poop"),  Some("\u{01F4A9}"));
-    assert_eq!(get("cat"),   Some("\u{01F431}"));
-    assert_eq!(get("+1"),    Some("👍"));
-    assert_eq!(get("-1"),    Some("\u{01F44E}"));
+    assert_eq!(get("poop"), Some("\u{01F4A9}"));
+    assert_eq!(get("cat"), Some("\u{01F431}"));
+    assert_eq!(get("+1"), Some("👍"));
+    assert_eq!(get("-1"), Some("\u{01F44E}"));
     assert_eq!(get("8ball"), Some("\u{01F3B1}"));
 }
 
