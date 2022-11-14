@@ -1,6 +1,7 @@
 # GitHub emoji for Rust
 
 Full, up-to-date database of emojis which have Unicode equivalents, taken from [GitHub emoji](https://github.com/github/gemoji) and [emoji-data](https://github.com/iamcal/emoji-data) which contains a few more entries.
+If you spot noteworthy updates in either of these and don't see the changes reflected here, please open an issue. 🙏
 
 Pre-generated and hashed at compile time for fast lookup.
 
