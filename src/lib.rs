@@ -1,8 +1,15 @@
-use crate::data_generated::EMOJI;
 use regex::{Captures, Regex};
 use std::borrow::Cow;
 
-mod data_generated;
+#[cfg(feature = "emojidb")]
+mod data_generated_expanded;
+#[cfg(feature = "emojidb")]
+use crate::data_generated_expanded::EMOJI;
+
+#[cfg(not(feature = "emojidb"))]
+mod data_generated_genmoji;
+#[cfg(not(feature = "emojidb"))]
+use crate::data_generated_genmoji::EMOJI;
 
 /// Find Unicode representation for given emoji name
 ///
@@ -84,4 +91,20 @@ fn get_nonexistent() {
     assert_eq!(get("++"), None);
     assert_eq!(get("--"), None);
     assert_eq!(get("666"), None);
+}
+
+#[cfg(not(feature = "emojidb"))]
+mod genmoji_only_tests {
+    #[test]
+    fn get_nonexistent() {
+        assert_eq!(super::get("robot_face"), None);
+    }
+}
+
+#[cfg(feature = "emojidb")]
+mod emojidb_only_tests {
+    #[test]
+    fn get_emojidb_only_codes() {
+        assert_eq!(super::get("robot_face"), Some("🤖"));
+    }
 }

@@ -12,6 +12,10 @@ categories = ["text-processing"]
 keywords = ["emoji", "github", "markdown", "unicode", "convert"]
 edition = "2021"
 
+[features]
+# Use the expanded emoji set, adding the shortcodes from emoji-db on top of gemoji
+emojidb = []
+
 [dependencies]
 phf = "0.11.0"
 regex = { version = "1.6.0", default-features = false, features = ["std"] }

@@ -58,7 +58,6 @@ fn generate_emoji_db_shortcodes(emoji_file: &Path) -> impl Iterator<Item = (Stri
 fn main() {
     let root = PathBuf::from(env::var_os("CARGO_MANIFEST_DIR").unwrap());
     let parent = root.parent().unwrap();
-    let dest = parent.join("src").join("data_generated.rs");
 
     let db_emojis: Vec<(String, String)> =
         generate_emoji_db_shortcodes(&parent.join("emoji_pretty.json")).collect();
@@ -71,12 +70,16 @@ fn main() {
         .chain(genmoji_emojis.clone().into_iter())
         .collect();
 
-    let mut file = BufWriter::new(File::create(&dest).unwrap());
+    let dest = parent.join("src").join("data_generated_expanded.rs");
+    generate_code(&dest, all_emojis.into_iter());
 
-    generate_code(&mut file, all_emojis.into_iter());
+    let dest = parent.join("src").join("data_generated_genmoji.rs");
+    generate_code(&dest, genmoji_emojis.into_iter());
 }
 
-fn generate_code(file: &mut BufWriter<File>, emojis: impl Iterator<Item = (String, String)>) {
+fn generate_code(dest: &PathBuf, emojis: impl Iterator<Item = (String, String)>) {
+    let mut file = BufWriter::new(File::create(dest).unwrap());
+
     write!(file, "/// Compile time generated lookup table for emoji.\n").unwrap();
     write!(file, "/// \n").unwrap();
     write!(file, "/// Taken from https://github.com/github/gemoji\n").unwrap();
