@@ -18,6 +18,23 @@ struct EmojiDbEntry {
     short_names: Vec<String>,
 }
 
+fn generate_genmoji_shortcodes(emoji_file: &Path) -> impl Iterator<Item = (String, String)> {
+    let source = fs::read(emoji_file).expect(&format!("Can't load {}", emoji_file.display()));
+    let github_emojis: Vec<GithubEmoji> = serde_json::from_slice(&source).unwrap();
+
+    github_emojis
+        .into_iter()
+        .filter_map(|e| {
+            if let Some(unicode_emoji) = &e.emoji {
+                let code = format!("\"{}\"", unicode_emoji);
+                Some(e.aliases.into_iter().map(move |name| (name, code.clone())))
+            } else {
+                None
+            }
+        })
+        .flatten()
+}
+
 fn generate_emoji_db_shortcodes(emoji_file: &Path) -> impl Iterator<Item = (String, String)> {
     let source = fs::read(emoji_file).expect(&format!("Can't load {}", emoji_file.display()));
     let db_emojis: Vec<EmojiDbEntry> = serde_json::from_slice(&source).unwrap();
@@ -64,24 +81,15 @@ fn main() {
 
     let mut already_added: HashSet<String> = HashSet::new();
 
-    for (shortcode, emoji) in generate_emoji_db_shortcodes(&parent.join("emoji_pretty.json")) {
+    let db_emojis = generate_emoji_db_shortcodes(&parent.join("emoji_pretty.json"));
+    let genmoji_emojis = generate_genmoji_shortcodes(&parent.join("gemoji/db/emoji.json"));
+
+    for (shortcode, emoji) in db_emojis.chain(genmoji_emojis) {
+        if already_added.contains(&shortcode) {
+            continue;
+        }
         already_added.insert(shortcode.clone());
         m.entry(shortcode, &emoji);
-    }
-
-    let source = fs::read(parent.join("gemoji/db/emoji.json"))
-        .expect("Can't load ../gemoji/db/emoji.json. Try git submodule update --init");
-    let github_emojis: Vec<GithubEmoji> = serde_json::from_slice(&source).unwrap();
-
-    for e in github_emojis {
-        if let Some(unicode_emoji) = &e.emoji {
-            let code = format!("\"{}\"", unicode_emoji);
-            for name in e.aliases {
-                if !already_added.contains(&name) {
-                    m.entry(name, &code);
-                }
-            }
-        }
     }
 
     let m = m.build();
