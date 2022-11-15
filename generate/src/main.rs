@@ -59,21 +59,23 @@ fn main() {
     let root = PathBuf::from(env::var_os("CARGO_MANIFEST_DIR").unwrap());
     let parent = root.parent().unwrap();
     let dest = parent.join("src").join("data_generated.rs");
+
+    let db_emojis = generate_emoji_db_shortcodes(&parent.join("emoji_pretty.json"));
+    let genmoji_emojis = generate_genmoji_shortcodes(&parent.join("gemoji/db/emoji.json"));
+
+    let all_emojis = db_emojis.chain(genmoji_emojis);
+
     let mut file = BufWriter::new(File::create(&dest).unwrap());
 
+    generate_code(&mut file, all_emojis);
+}
+
+fn generate_code(file: &mut BufWriter<File>, emojis: impl Iterator<Item = (String, String)>) {
+    write!(file, "/// Compile time generated lookup table for emoji.\n").unwrap();
+    write!(file, "/// \n").unwrap();
+    write!(file, "/// Taken from https://github.com/github/gemoji\n").unwrap();
     write!(
-        &mut file,
-        "/// Compile time generated lookup table for emoji.\n"
-    )
-    .unwrap();
-    write!(&mut file, "/// \n").unwrap();
-    write!(
-        &mut file,
-        "/// Taken from https://github.com/github/gemoji\n"
-    )
-    .unwrap();
-    write!(
-        &mut file,
+        file,
         "pub static EMOJI: phf::Map<&'static str, &'static str> = "
     )
     .unwrap();
@@ -81,10 +83,7 @@ fn main() {
 
     let mut already_added: HashSet<String> = HashSet::new();
 
-    let db_emojis = generate_emoji_db_shortcodes(&parent.join("emoji_pretty.json"));
-    let genmoji_emojis = generate_genmoji_shortcodes(&parent.join("gemoji/db/emoji.json"));
-
-    for (shortcode, emoji) in db_emojis.chain(genmoji_emojis) {
+    for (shortcode, emoji) in emojis {
         if already_added.contains(&shortcode) {
             continue;
         }
@@ -93,5 +92,5 @@ fn main() {
     }
 
     let m = m.build();
-    write!(&mut file, "{};\n", m).unwrap();
+    write!(file, "{};\n", m).unwrap();
 }
