@@ -60,14 +60,20 @@ fn main() {
     let parent = root.parent().unwrap();
     let dest = parent.join("src").join("data_generated.rs");
 
-    let db_emojis = generate_emoji_db_shortcodes(&parent.join("emoji_pretty.json"));
-    let genmoji_emojis = generate_genmoji_shortcodes(&parent.join("gemoji/db/emoji.json"));
+    let db_emojis: Vec<(String, String)> =
+        generate_emoji_db_shortcodes(&parent.join("emoji_pretty.json")).collect();
+    let genmoji_emojis: Vec<(String, String)> =
+        generate_genmoji_shortcodes(&parent.join("gemoji/db/emoji.json")).collect();
 
-    let all_emojis = db_emojis.chain(genmoji_emojis);
+    let all_emojis: Vec<(String, String)> = db_emojis
+        .clone()
+        .into_iter()
+        .chain(genmoji_emojis.clone().into_iter())
+        .collect();
 
     let mut file = BufWriter::new(File::create(&dest).unwrap());
 
-    generate_code(&mut file, all_emojis);
+    generate_code(&mut file, all_emojis.into_iter());
 }
 
 fn generate_code(file: &mut BufWriter<File>, emojis: impl Iterator<Item = (String, String)>) {
