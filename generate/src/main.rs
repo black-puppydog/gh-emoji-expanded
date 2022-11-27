@@ -62,7 +62,7 @@ fn main() {
     let db_emojis: Vec<(String, String)> =
         generate_emoji_db_shortcodes(&parent.join("emoji_pretty.json")).collect();
     let genmoji_emojis: Vec<(String, String)> =
-        generate_genmoji_shortcodes(&parent.join("gemoji/db/emoji.json")).collect();
+        generate_genmoji_shortcodes(&parent.join("gemoji.json")).collect();
 
     let all_emojis: Vec<(String, String)> = db_emojis
         .clone()
