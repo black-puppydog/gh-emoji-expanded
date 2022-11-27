@@ -1,15 +1,15 @@
 [package]
-name = "gh-emoji-expanded"
+name = "node-emoji"
 version = "1.0.7"
-authors = ["Daan Wynen <emoji-db-expanded@muchmuch.coffee>", "Kornel <kornel@geekhood.net>", "Jiří Šebele <sindriava@gmail.com>"]
+authors = ["Daan Wynen <node-emoji-rs@muchmuch.coffee>", "Kornel <kornel@geekhood.net>", "Jiří Šebele <sindriava@gmail.com>"]
 
 description = "Convert `:emoji:` to Unicode using GitHub's and EmojiDB's emoji names"
-repository = "https://github.com/black-puppydog/gh-emoji-expanded"
+repository = "https://github.com/black-puppydog/node-emoji-rs"
 readme = "README.md"
 license = "MIT"
 include = ["/src/*.rs", "/LICENSE", "/README.md", "/Cargo.toml"]
 categories = ["text-processing"]
-keywords = ["emoji", "github", "markdown", "unicode", "convert"]
+keywords = ["emoji", "github", "markdown", "unicode", "node-emoji"]
 edition = "2021"
 
 [features]
