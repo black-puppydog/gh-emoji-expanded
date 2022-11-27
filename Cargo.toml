@@ -3,7 +3,7 @@ name = "gh-emoji-expanded"
 version = "1.0.7"
 authors = ["Daan Wynen <emoji-db-expanded@muchmuch.coffee>", "Kornel <kornel@geekhood.net>", "Jiří Šebele <sindriava@gmail.com>"]
 
-description = "Convert `:emoji:` to Unicode using GitHub's emoji names"
+description = "Convert `:emoji:` to Unicode using GitHub's and EmojiDB's emoji names"
 repository = "https://github.com/black-puppydog/gh-emoji-expanded"
 readme = "README.md"
 license = "MIT"
