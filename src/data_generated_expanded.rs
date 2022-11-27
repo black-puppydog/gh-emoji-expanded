@@ -1,6 +1,7 @@
 /// Compile time generated lookup table for emoji.
 /// 
 /// Taken from https://github.com/github/gemoji
+///        and https://github.com/iamcal/emoji-data
 pub static EMOJI: phf::Map<&'static str, &'static str> = ::phf::Map {
     key: 12913932095322966823,
     disps: &[

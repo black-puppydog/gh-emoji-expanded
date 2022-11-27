@@ -71,18 +71,26 @@ fn main() {
         .collect();
 
     let dest = parent.join("src").join("data_generated_expanded.rs");
-    generate_code(&dest, all_emojis.into_iter());
+    generate_code(
+        &dest,
+        all_emojis.into_iter(),
+        "/// Taken from https://github.com/github/gemoji\n///        and https://github.com/iamcal/emoji-data\n",
+    );
 
     let dest = parent.join("src").join("data_generated_genmoji.rs");
-    generate_code(&dest, genmoji_emojis.into_iter());
+    generate_code(
+        &dest,
+        genmoji_emojis.into_iter(),
+        "/// Taken from https://github.com/github/gemoji\n",
+    );
 }
 
-fn generate_code(dest: &PathBuf, emojis: impl Iterator<Item = (String, String)>) {
+fn generate_code(dest: &PathBuf, emojis: impl Iterator<Item = (String, String)>, credit: &str) {
     let mut file = BufWriter::new(File::create(dest).unwrap());
 
     write!(file, "/// Compile time generated lookup table for emoji.\n").unwrap();
     write!(file, "/// \n").unwrap();
-    write!(file, "/// Taken from https://github.com/github/gemoji\n").unwrap();
+    write!(file, "{}", credit).unwrap();
     write!(
         file,
         "pub static EMOJI: phf::Map<&'static str, &'static str> = "
